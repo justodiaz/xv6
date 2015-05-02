@@ -27,6 +27,7 @@ static void itrunc(struct inode*);
 
 struct inode_functions fs_i_func = { fs_ipopulate, fs_iupdate, fs_readi, fs_writei };      
 
+
 // Read the super block.
 void
 readsb(int dev, struct superblock *sb)
@@ -171,7 +172,8 @@ iinit(void)
   initlock(&icache.lock, "icache");
 }
 
-static struct inode* iget(uint dev, uint inum, struct inode* parent);
+
+struct inode* iget(uint dev, uint inum, struct inode* parent);
 
 //PAGEBREAK!
 // Allocate a new inode with the given type on device dev.
@@ -220,10 +222,11 @@ fs_iupdate(struct inode *ip)
   brelse(bp);
 }
 
+
 // Find the inode with number inum on device dev
 // and return the in-memory copy. Does not lock
 // the inode and does not read it from disk.
-static struct inode*
+struct inode*
 iget(uint dev, uint inum, struct inode* parent)
 {
   struct inode *ip, *empty;
@@ -305,6 +308,7 @@ fs_ipopulate(struct inode* ip) {
   ip->minor = dip->minor;
   ip->nlink = dip->nlink;
   ip->size = dip->size;
+  ip->mounted = 0; 
   
   memmove(ip->addrs, dip->addrs, sizeof(ip->addrs));
   brelse(bp);
@@ -476,6 +480,8 @@ fs_readi(struct inode *ip, char *dst, uint off, uint n)
   return n;
 }
 
+
+
 // PAGEBREAK!
 // Write data to inode.
 int
@@ -540,6 +546,9 @@ dirlookup(struct inode *dp, char *name, uint *poff)
       if(poff)
         *poff = off;
       inum = de.inum;
+
+      if(dp->mounted) return iget(dp->mounted, inum, dp);
+
       return iget(dp->dev, inum, dp);
     }
   }
@@ -647,6 +656,7 @@ namex(char *path, int nameiparent, char *name)
       return 0;
     }
     iunlockput(ip);
+
     ip = next;
   }
   if(nameiparent){

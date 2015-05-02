@@ -18,6 +18,8 @@ int nextpid = 1;
 extern void forkret(void);
 extern void trapret(void);
 
+extern void init_procfs(void); 
+
 static void wakeup1(void *chan);
 
 void
@@ -340,6 +342,7 @@ forkret(void)
     // be run from main().
     first = 0;
     initlog();
+    init_procfs();
   }
   
   // Return to "caller", actually trapret (see allocproc).

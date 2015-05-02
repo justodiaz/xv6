@@ -42,6 +42,7 @@ struct inode {
   short minor;
   short nlink;
   uint size;
+  uint mounted;    //mounted on non-default file system
   uint addrs[NDIRECT+1];
 };
 #define I_BUSY 0x1

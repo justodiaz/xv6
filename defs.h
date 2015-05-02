@@ -54,6 +54,10 @@ int             fs_readi(struct inode*, char*, uint, uint);
 int             fs_writei(struct inode*, char*, uint, uint);
 void            fs_ipopulate(struct inode* ip);
 void            fs_iupdate(struct inode*);
+int             procfs_readi(struct inode*, char*, uint, uint);
+int             procfs_writei(struct inode*, char*, uint, uint);
+void            procfs_ipopulate(struct inode* ip);
+void            procfs_iupdate(struct inode*);
 
 
 
