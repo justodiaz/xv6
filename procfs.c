@@ -31,7 +31,8 @@ struct inode_functions procfs_i_func = { procfs_ipopulate, procfs_iupdate, procf
 
 void init_procfs(){
   struct inode *ip = namei("/proc");
-  ip->i_func = &procfs_i_func; 
+  if(ip != 0)
+	  ip->i_func = &procfs_i_func; 
 }  
 
 void procfs_iupdate(struct inode *ip)
