@@ -20,6 +20,10 @@ struct {
   struct proc proc[NPROC];
 } ptable;
 
+
+extern
+struct cpu cpus[NCPU];
+
 extern 
 struct inode* iget(uint dev, uint inum, struct inode* parent);
 
@@ -152,10 +156,44 @@ procfs_readi(struct inode *ip, char *dst, uint off, uint n)
 
 	if(ip->inum < PROCDIR_OFF){
 		if(ip->type != T_FILE) return -1;
+		if(off > 16 ) return -1;
 
+		if(off + n > 16) n = 16 - off;
+
+		char cpuinfo[] = "CPUS: ";
+		char buf[10];
+		char buf2[10];
+		int num = 0;
 		switch(ip->inum){
 			case IMEMINFO:
+
+
+				break;
+			
 			case ICPUINFO:
+				{
+				struct cpu *c;
+				for(c = cpus; c < &cpus[NCPU];c++)
+					if(c->cpu != 0) num++;
+	
+				toString(num,buf2,2);
+				
+				char *t;
+				int i;
+				for(t = cpuinfo, i = 0; *t != '\0'; t++, i++)
+					buf[i] = *t;
+				
+				
+				for(t = buf2; *t != '\0'; t++, i++)
+					buf[i] = *t;
+
+				buf[i] = '\n';
+				buf[i+1] = '\0';
+					
+				memmove(dst, buf+off,n);
+				break;
+				}
+				
 			default: cprintf("huh?\n"); return -1; break;
 		}
 	}
